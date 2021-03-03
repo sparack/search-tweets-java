@@ -2,7 +2,7 @@ package dev.twitter.api.v2.parser.impl;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +28,7 @@ public class SearchAPITest {
   @Test
   public void testBasicSearch() throws IOException, URISyntaxException {
     SearchQuery searchQuery = new SearchQuery();
-    searchQuery.setEndTime(LocalDateTime.now());
+    //searchQuery.setEndTime(ZonedDateTime.now());
     searchQuery.setExpansions(new ArrayList<>(Arrays.asList(Expansion.AttachmentsPollIds, Expansion.AuthorId)));
     searchQuery.setMaxResults(12);
     searchQuery.setMediaFields(new ArrayList<>(Arrays.asList(MediaField.duration_ms, MediaField.media_key)));
