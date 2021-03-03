@@ -12,5 +12,9 @@ public class Tweet {
   private String inReplyToUserId;
   private List<ReferencedTweet> referencedTweets;
   private Attachments attachments;
+  private Geo geo;
+  private List<ContextAnnotations> contextAnnotations;
+  private Entities entities;
+  private Withheld withheld;
 
 }

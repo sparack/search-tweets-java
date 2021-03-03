@@ -20,6 +20,11 @@
                 <artifactId>search-tweets-java-core</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.18</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
