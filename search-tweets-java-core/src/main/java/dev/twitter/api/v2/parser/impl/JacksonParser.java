@@ -3,6 +3,7 @@ package dev.twitter.api.v2.parser.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dev.twitter.api.v2.parser.Parser;
 
@@ -13,6 +14,7 @@ public class JacksonParser implements Parser {
   public JacksonParser() {
     mapper = new ObjectMapper();
     mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    mapper.registerModule(new JavaTimeModule());
   }
 
   @Override
