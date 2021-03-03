@@ -6,6 +6,6 @@ import java.net.URISyntaxException;
 import dev.twitter.api.v2.model.SearchQuery;
 import dev.twitter.api.v2.model.SearchResponse;
 
-public interface SearchInterface {
+public interface SearchAPI {
   public SearchResponse search(SearchQuery searchQuery) throws IOException, URISyntaxException;
 }
