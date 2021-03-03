@@ -28,4 +28,13 @@ public class SearchResponseTest {
     assertEquals(1, t.getReferencedTweets().size());
     assertEquals("1212092627178287104", t.getReferencedTweets().get(0).getId());
   }
+
+  @Test
+  public void testReadJsonWithPoll() throws Exception {
+    String json = FileUtils.getContents("search-response-with-poll.json");
+    SearchResponse s = parser.jsonToObject(json, SearchResponse.class);
+
+    Poll p = s.getIncludes().getPolls().get(0);
+    assertEquals(1440, p.getDurationMinutes());
+  }
 }
