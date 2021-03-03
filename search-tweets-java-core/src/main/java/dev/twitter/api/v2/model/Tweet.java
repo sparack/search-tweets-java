@@ -3,6 +3,9 @@ package dev.twitter.api.v2.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.Data;
+
+@Data
 public class Tweet {
   private String id;
   private String text;

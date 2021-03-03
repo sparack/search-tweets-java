@@ -1,8 +1,12 @@
 package dev.twitter.api.v2.model;
 
-public class SearchResponse {
+import java.util.List;
 
-    private String id;
-    private String text;
+import lombok.Data;
+
+@Data
+public class SearchResponse {
+    private List<Tweet> data;
+    private Meta meta;
 
 }
