@@ -1,5 +1,7 @@
 package dev.twitter.api.v2.model;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -10,4 +12,10 @@ public class Url {
   private String expandedUrl;
   private String displayUrl;
   private String unwoundUrl;
+
+  private List<Image> images;
+
+  private int status;
+  private String title;
+  private String description;
 }
