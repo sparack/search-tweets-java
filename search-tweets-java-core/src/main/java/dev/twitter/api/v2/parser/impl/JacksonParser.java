@@ -1,12 +1,19 @@
 package dev.twitter.api.v2.parser.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
 import dev.twitter.api.v2.parser.Parser;
 
 public class JacksonParser implements Parser {
 
-  private ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper;
+
+  public JacksonParser() {
+    mapper = new ObjectMapper();
+    mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+  }
 
   @Override
   public <T> T jsonToObject(String json, Class<T> clazz) {
