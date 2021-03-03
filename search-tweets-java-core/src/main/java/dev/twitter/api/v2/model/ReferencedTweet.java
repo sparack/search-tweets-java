@@ -3,7 +3,7 @@ package dev.twitter.api.v2.model;
 public class ReferencedTweet {
 
   enum ReferenceType {
-    retweeted, quoted, repliedTo
+    retweeted, quoted, replied_to
   }
 
   private String id;
