@@ -1,5 +1,10 @@
 package dev.twitter.api.v2.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -27,5 +32,28 @@ public class SearchResponseTest {
 
     assertEquals(1, t.getReferencedTweets().size());
     assertEquals("1212092627178287104", t.getReferencedTweets().get(0).getId());
+  }
+
+  @Test
+  public void testReadJson_Poll() throws Exception {
+    String json = FileUtils.getContents("search_response_poll.json");
+    SearchResponse s = parser.jsonToObject(json, SearchResponse.class);
+
+    Poll p = s.getIncludes().getPolls().get(0);
+    assertEquals(1440, p.getDurationMinutes());
+  }
+
+  @Test
+  public void testReadJson_DateTime() throws Exception {
+    String json = FileUtils.getContents("search_response_datetime.json");
+    SearchResponse s = parser.jsonToObject(json, SearchResponse.class);
+
+    Tweet t =  s.getData().get(0);
+    ZonedDateTime expected = ZonedDateTime.of(
+        LocalDate.of(2019,12,31),
+        LocalTime.of(19,26,16),
+        ZoneId.of("UTC")
+    );
+    assertEquals(expected, t.getCreatedAt());
   }
 }
