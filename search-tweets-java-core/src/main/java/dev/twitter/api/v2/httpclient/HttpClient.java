@@ -15,32 +15,48 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-// TODO: singleton httpClient
+import dev.twitter.api.v2.exceptions.TwitterException;
+import dev.twitter.api.v2.model.TwitterError;
+import dev.twitter.api.v2.parser.impl.JacksonParser;
+
 public class HttpClient {
 
-  public static String executeGet(ArrayList<NameValuePair> queryParameters, String bearerToken) throws IOException, URISyntaxException {
+  public static String executeGet(ArrayList<NameValuePair> queryParameters, String bearerToken) throws TwitterException {
     CloseableHttpClient httpClient = HttpClients.custom()
         .setDefaultRequestConfig(RequestConfig.custom()
             .setCookieSpec(CookieSpecs.STANDARD).build())
         .build();
 
-    URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent");
-    uriBuilder.addParameters(queryParameters);
+    URIBuilder uriBuilder = null;
+    try {
+      uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent");
+      uriBuilder.addParameters(queryParameters);
 
-    HttpGet httpGet = new HttpGet(uriBuilder.build());
-    httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
-    httpGet.setHeader("Content-Type", "application/json");
+      HttpGet httpGet = new HttpGet(uriBuilder.build());
+      httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
+      httpGet.setHeader("Content-Type", "application/json");
 
-    HttpResponse response = httpClient.execute(httpGet);
-    HttpEntity entity = response.getEntity();
-    String apiResponse = null;
-    if (null != entity) {
-      apiResponse = EntityUtils.toString(entity, "UTF-8");
+      HttpResponse response = httpClient.execute(httpGet);
+      HttpEntity entity = response.getEntity();
+      String apiResponse = null;
+      if (null != entity) {
+        apiResponse = EntityUtils.toString(entity, "UTF-8");
+      }
+
+      if(response.getStatusLine().getStatusCode() == 200) {
+        return apiResponse;
+      } else {
+        JacksonParser parser = new JacksonParser();
+        TwitterError twError = parser.jsonToObject(apiResponse, TwitterError.class);
+        throw new TwitterException("Exception occurred while fetching results from Twitter API", response.getStatusLine().getStatusCode(), twError);
+      }
+
+    } catch (URISyntaxException | IOException e) {
+      throw new TwitterException(e.getMessage(), e);
     }
-    return apiResponse;
   }
 
-  //TODO: For fitered stream
+  //TODO: For filtered stream
   public static HttpResponse executePost(String bearerToken) {
     return null;
   }
