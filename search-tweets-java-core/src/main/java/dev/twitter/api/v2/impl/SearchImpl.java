@@ -12,6 +12,7 @@ import dev.twitter.api.v2.httpclient.HttpClient;
 import dev.twitter.api.v2.model.SearchQuery;
 import dev.twitter.api.v2.model.SearchResponse;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
+import dev.twitter.api.v2.util.DateTimeUtil;
 
 public class SearchImpl implements SearchAPI {
   JacksonParser parser = new JacksonParser();
@@ -38,7 +39,7 @@ public class SearchImpl implements SearchAPI {
     ArrayList<NameValuePair> params = new ArrayList<>();
 
     if(query.getEndTime() != null)
-      params.add(new BasicNameValuePair("end_time", query.getEndTime().toString()));
+      params.add(new BasicNameValuePair("end_time", DateTimeUtil.toISO(query.getEndTime())));
 
     if(query.getExpansions() != null && !query.getExpansions().isEmpty())
       params.add(new BasicNameValuePair("expansions", StringUtils.join(query.getExpansions(), ',')));
@@ -65,7 +66,7 @@ public class SearchImpl implements SearchAPI {
       params.add(new BasicNameValuePair("since_id", query.getSinceId()));
 
     if(query.getStartTime() != null)
-      params.add(new BasicNameValuePair("start_time", query.getStartTime().toString()));
+      params.add(new BasicNameValuePair("start_time", DateTimeUtil.toISO(query.getStartTime())));
 
     if(query.getTweetFields() != null && !query.getTweetFields().isEmpty())
       params.add(new BasicNameValuePair("tweet.fields", StringUtils.join(query.getTweetFields(), ',')));
