@@ -16,6 +16,7 @@ import org.junit.runners.JUnit4;
 import dev.twitter.api.v2.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.impl.SearchImpl;
+import dev.twitter.api.v2.model.ConsumerKey;
 import dev.twitter.api.v2.model.Expansion;
 import dev.twitter.api.v2.model.MediaField;
 import dev.twitter.api.v2.model.PlaceField;
@@ -48,6 +49,28 @@ public class SearchAPIIntegrationTest {
     SearchAPI searchAPI = new SearchImpl();
     SearchResponse response = searchAPI.search(searchQuery);
     assertEquals(12, response.getData().size());
+    assertFalse(StringUtils.isEmpty(response.getData().get(0).getAuthorId()));
+    assertNotNull(response.getMeta());
+    assertNotNull(response.getIncludes());
+  }
+
+  @Test
+  public void testBasicSearchWithConsumerKey() throws TwitterException {
+    ConsumerKey consumerKey = new ConsumerKey();
+    consumerKey.setApiKey("replace-me");
+    consumerKey.setApiSecretKey("replace-me");
+
+    SearchQuery searchQuery = new SearchQuery();
+    searchQuery.setExpansions(
+        new ArrayList(Arrays.asList(Expansion.AuthorId.getParamValue())));
+    searchQuery.setQuery("biden");
+    searchQuery.setUserFields(new ArrayList<>(Arrays.asList(UserField.id)));
+    searchQuery.setTweetFields(
+        new ArrayList<>(Arrays.asList(TweetField.author_id, TweetField.created_at, TweetField.context_annotations)));
+
+    SearchAPI searchAPI = new SearchImpl();
+    SearchResponse response = searchAPI.search(searchQuery, consumerKey);
+    assertEquals(10, response.getData().size());
     assertFalse(StringUtils.isEmpty(response.getData().get(0).getAuthorId()));
     assertNotNull(response.getMeta());
     assertNotNull(response.getIncludes());

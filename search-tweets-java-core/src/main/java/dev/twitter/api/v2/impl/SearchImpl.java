@@ -9,9 +9,11 @@ import org.apache.http.message.BasicNameValuePair;
 import dev.twitter.api.v2.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.httpclient.HttpClient;
+import dev.twitter.api.v2.model.ConsumerKey;
 import dev.twitter.api.v2.model.SearchQuery;
 import dev.twitter.api.v2.model.SearchResponse;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
+import dev.twitter.api.v2.util.AuthUtil;
 import dev.twitter.api.v2.util.DateTimeUtil;
 
 public class SearchImpl implements SearchAPI {
@@ -23,6 +25,15 @@ public class SearchImpl implements SearchAPI {
 
     String searchResponse =
         HttpClient.executeGet(queryParameters, "hard-coded bearer token");
+    return parser.jsonToObject(searchResponse, SearchResponse.class);
+  }
+
+  @Override
+  public SearchResponse search(SearchQuery searchQuery, ConsumerKey consumerKey) throws TwitterException {
+    ArrayList<NameValuePair> queryParameters = convertSearchQueryToParams(searchQuery);
+
+    String searchResponse =
+        HttpClient.executeGet(queryParameters, AuthUtil.getBearerTokenFromConsumerKey(consumerKey));
     return parser.jsonToObject(searchResponse, SearchResponse.class);
   }
 
