@@ -21,4 +21,9 @@ public enum Expansion {
   Expansion() {
     this.paramValue = this.name();
   }
+
+  // Use paramvalue to set `expansions` in the SearchQuery
+  public String getParamValue() {
+    return this.paramValue;
+  }
 }

@@ -1,7 +1,5 @@
 package dev.twitter.api.v2.impl;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +7,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import dev.twitter.api.v2.SearchAPI;
+import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.httpclient.HttpClient;
 import dev.twitter.api.v2.model.SearchQuery;
 import dev.twitter.api.v2.model.SearchResponse;
@@ -18,7 +17,7 @@ public class SearchImpl implements SearchAPI {
   JacksonParser parser = new JacksonParser();
 
   @Override
-  public SearchResponse search(SearchQuery searchQuery) throws IOException, URISyntaxException {
+  public SearchResponse search(SearchQuery searchQuery) throws TwitterException {
     ArrayList<NameValuePair> queryParameters = convertSearchQueryToParams(searchQuery);
 
     String searchResponse =
@@ -41,7 +40,7 @@ public class SearchImpl implements SearchAPI {
     if(query.getEndTime() != null)
       params.add(new BasicNameValuePair("end_time", query.getEndTime().toString()));
 
-    if(query.getExpansions() != null && query.getExpansions().isEmpty())
+    if(query.getExpansions() != null && !query.getExpansions().isEmpty())
       params.add(new BasicNameValuePair("expansions", StringUtils.join(query.getExpansions(), ',')));
 
     if(query.getMaxResults() != null)

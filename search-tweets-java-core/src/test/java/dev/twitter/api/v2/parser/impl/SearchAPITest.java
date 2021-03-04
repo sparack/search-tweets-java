@@ -1,8 +1,6 @@
 package dev.twitter.api.v2.parser.impl;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.time.ZonedDateTime;
+import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import dev.twitter.api.v2.SearchAPI;
+import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.impl.SearchImpl;
 import dev.twitter.api.v2.model.Expansion;
 import dev.twitter.api.v2.model.MediaField;
@@ -26,10 +25,11 @@ import dev.twitter.api.v2.model.UserField;
 public class SearchAPITest {
 
   @Test
-  public void testBasicSearch() throws IOException, URISyntaxException {
+  public void testBasicSearch() throws TwitterException {
     SearchQuery searchQuery = new SearchQuery();
     //searchQuery.setEndTime(ZonedDateTime.now());
-    searchQuery.setExpansions(new ArrayList<>(Arrays.asList(Expansion.AttachmentsPollIds, Expansion.AuthorId)));
+    searchQuery.setExpansions(
+        new ArrayList(Arrays.asList(Expansion.AttachmentsPollIds.getParamValue(), Expansion.AuthorId.getParamValue())));
     searchQuery.setMaxResults(12);
     searchQuery.setMediaFields(new ArrayList<>(Arrays.asList(MediaField.duration_ms, MediaField.media_key)));
     searchQuery.setQuery("biden");
@@ -42,7 +42,20 @@ public class SearchAPITest {
 
     SearchAPI searchAPI = new SearchImpl();
     SearchResponse response = searchAPI.search(searchQuery);
+    assertEquals(12, response.getData().size());
+
     //TODO: do not print on console
     System.out.println("Response ==> "+ response);
+  }
+
+  @Test(expected = TwitterException.class)
+  public void testFailedRequest() throws TwitterException {
+    SearchQuery searchQuery = new SearchQuery();
+    searchQuery.setQuery("biden");
+
+    //maxResults not b/w 10 and 100 should throw exception
+    searchQuery.setMaxResults(4);
+    SearchAPI searchAPI = new SearchImpl();
+    searchAPI.search(searchQuery);
   }
 }
