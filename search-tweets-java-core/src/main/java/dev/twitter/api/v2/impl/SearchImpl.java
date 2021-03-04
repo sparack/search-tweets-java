@@ -41,7 +41,7 @@ public class SearchImpl implements SearchAPI {
     if(query.getEndTime() != null)
       params.add(new BasicNameValuePair("end_time", query.getEndTime().toString()));
 
-    if(query.getExpansions() != null && query.getExpansions().isEmpty())
+    if(query.getExpansions() != null && !query.getExpansions().isEmpty())
       params.add(new BasicNameValuePair("expansions", StringUtils.join(query.getExpansions(), ',')));
 
     if(query.getMaxResults() != null)
