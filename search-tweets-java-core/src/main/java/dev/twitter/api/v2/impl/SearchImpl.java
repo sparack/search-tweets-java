@@ -23,8 +23,6 @@ public class SearchImpl implements SearchAPI {
 
     String searchResponse =
         HttpClient.executeGet(queryParameters, "hard-coded bearer token");
-
-    // TODO: Handle exception for null searchResponse
     return parser.jsonToObject(searchResponse, SearchResponse.class);
   }
 
