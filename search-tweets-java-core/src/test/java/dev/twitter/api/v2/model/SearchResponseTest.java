@@ -35,6 +35,15 @@ public class SearchResponseTest {
   }
 
   @Test
+  public void testReadJson_Poll() throws Exception {
+    String json = FileUtils.getContents("search_response_poll.json");
+    SearchResponse s = parser.jsonToObject(json, SearchResponse.class);
+
+    Poll p = s.getIncludes().getPolls().get(0);
+    assertEquals(1440, p.getDurationMinutes());
+  }
+
+  @Test
   public void testReadJson_DateTime() throws Exception {
     String json = FileUtils.getContents("search_response_datetime.json");
     SearchResponse s = parser.jsonToObject(json, SearchResponse.class);
