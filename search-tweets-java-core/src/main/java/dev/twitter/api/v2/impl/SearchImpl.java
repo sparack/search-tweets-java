@@ -3,8 +3,8 @@ package dev.twitter.api.v2.impl;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 
 import dev.twitter.api.v2.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;

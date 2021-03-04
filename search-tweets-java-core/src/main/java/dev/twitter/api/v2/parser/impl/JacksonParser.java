@@ -42,4 +42,8 @@ public class JacksonParser implements Parser {
       throw new RuntimeException(e);
     }
   }
+
+  public ObjectMapper getMapper() {
+    return mapper;
+  }
 }
