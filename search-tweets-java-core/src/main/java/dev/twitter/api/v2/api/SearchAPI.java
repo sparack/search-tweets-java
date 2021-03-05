@@ -1,4 +1,4 @@
-package dev.twitter.api.v2;
+package dev.twitter.api.v2.api;
 
 import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.model.ConsumerKey;

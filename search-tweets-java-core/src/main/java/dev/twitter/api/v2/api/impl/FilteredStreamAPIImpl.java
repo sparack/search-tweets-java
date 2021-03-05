@@ -2,6 +2,7 @@ package dev.twitter.api.v2.api.impl;
 
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -20,8 +22,10 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 
 import dev.twitter.api.v2.api.FilteredStreamAPI;
@@ -33,6 +37,7 @@ import dev.twitter.api.v2.model.rule.Rules;
 import dev.twitter.api.v2.model.stream.StreamElement;
 import dev.twitter.api.v2.parser.Parser;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
+import dev.twitter.api.v2.util.DateTimeUtil;
 
 public class FilteredStreamAPIImpl implements FilteredStreamAPI {
 
@@ -48,8 +53,9 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
     setupRules(bearerToken, rules);
 
     ObjectMapper mapper = ((JacksonParser) parser).getMapper();
-
-    HttpGet httpGet = new HttpGet("https://api.twitter.com/2/tweets/search/stream");
+    URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream");
+    uriBuilder.addParameters(convertSearchQueryToParams(query));
+    HttpGet httpGet = new HttpGet(uriBuilder.build());
     httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
 
     BlockingQueue<StreamElement> queue = new LinkedBlockingQueue<>(50);
@@ -138,5 +144,29 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
     if (null != entity) {
       System.out.println(EntityUtils.toString(entity, "UTF-8"));
     }
+  }
+
+  private ArrayList<NameValuePair> convertSearchQueryToParams(SearchQuery query) {
+    ArrayList<NameValuePair> params = new ArrayList<>();
+
+    if(query.getExpansions() != null && !query.getExpansions().isEmpty())
+      params.add(new BasicNameValuePair("expansions", StringUtils.join(query.getExpansions(), ',')));
+
+    if(query.getMediaFields() != null && !query.getMediaFields().isEmpty())
+      params.add(new BasicNameValuePair("media.fields", StringUtils.join(query.getMediaFields(), ',')));
+
+    if (query.getPlaceFields() != null && !query.getPlaceFields().isEmpty())
+      params.add(new BasicNameValuePair("place.fields", StringUtils.join(query.getPlaceFields(), ',')));
+
+    if (query.getPollFields() != null && !query.getPollFields().isEmpty())
+      params.add(new BasicNameValuePair("poll.fields", StringUtils.join(query.getPollFields(), ',')));
+
+    if(query.getTweetFields() != null && !query.getTweetFields().isEmpty())
+      params.add(new BasicNameValuePair("tweet.fields", StringUtils.join(query.getTweetFields(), ',')));
+
+    if(query.getUserFields() != null && !query.getUserFields().isEmpty())
+      params.add(new BasicNameValuePair("user.fields", StringUtils.join(query.getUserFields(), ',')));
+
+    return params;
   }
 }
