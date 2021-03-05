@@ -21,7 +21,7 @@ import dev.twitter.api.v2.parser.impl.JacksonParser;
 
 public class HttpClient {
 
-  public static String executeGet(List<NameValuePair> queryParameters, String bearerToken) throws TwitterException {
+  public static String executeGet(List<NameValuePair> queryParameters, String path, String bearerToken) throws TwitterException {
     CloseableHttpClient httpClient = HttpClients.custom()
         .setDefaultRequestConfig(RequestConfig.custom()
             .setCookieSpec("standard").build())
@@ -29,7 +29,7 @@ public class HttpClient {
 
     URIBuilder uriBuilder = null;
     try {
-      uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent");
+      uriBuilder = new URIBuilder(path);
       uriBuilder.addParameters(queryParameters);
 
       HttpGet httpGet = new HttpGet(uriBuilder.build());

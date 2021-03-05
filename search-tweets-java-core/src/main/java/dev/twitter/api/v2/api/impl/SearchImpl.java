@@ -9,6 +9,7 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import dev.twitter.api.v2.api.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.httpclient.HttpClient;
+import dev.twitter.api.v2.model.SearchType;
 import dev.twitter.api.v2.model.token.BearerToken;
 import dev.twitter.api.v2.model.token.ConsumerKey;
 import dev.twitter.api.v2.model.SearchQuery;
@@ -21,20 +22,20 @@ public class SearchImpl implements SearchAPI {
   JacksonParser parser = new JacksonParser();
 
   @Override
-  public SearchResponse search(SearchQuery searchQuery, BearerToken bearerToken) throws TwitterException {
+  public SearchResponse search(SearchQuery searchQuery, SearchType searchType, BearerToken bearerToken) throws TwitterException {
     ArrayList<NameValuePair> queryParameters = convertSearchQueryToParams(searchQuery);
 
     String searchResponse =
-        HttpClient.executeGet(queryParameters, bearerToken.getBearerToken());
+        HttpClient.executeGet(queryParameters, searchType.getPath(), bearerToken.getBearerToken());
     return parser.jsonToObject(searchResponse, SearchResponse.class);
   }
 
   @Override
-  public SearchResponse search(SearchQuery searchQuery, ConsumerKey consumerKey) throws TwitterException {
+  public SearchResponse search(SearchQuery searchQuery, SearchType searchType, ConsumerKey consumerKey) throws TwitterException {
     ArrayList<NameValuePair> queryParameters = convertSearchQueryToParams(searchQuery);
 
     String searchResponse =
-        HttpClient.executeGet(queryParameters, AuthUtil.getBearerTokenFromConsumerKey(consumerKey));
+        HttpClient.executeGet(queryParameters, searchType.getPath(), AuthUtil.getBearerTokenFromConsumerKey(consumerKey));
     return parser.jsonToObject(searchResponse, SearchResponse.class);
   }
 
