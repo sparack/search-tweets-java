@@ -22,6 +22,7 @@ import dev.twitter.api.v2.model.UserField;
 import dev.twitter.api.v2.model.rule.Add;
 import dev.twitter.api.v2.model.rule.Rules;
 import dev.twitter.api.v2.model.stream.StreamElement;
+import dev.twitter.api.v2.model.token.BearerToken;
 
 @RunWith(JUnit4.class)
 public class FilteredStreamAPIImplTest {
@@ -47,8 +48,9 @@ public class FilteredStreamAPIImplTest {
         FilteredStreamQuery.TweetField.author_id,
         FilteredStreamQuery.TweetField.created_at)));
 
-    String bearerToken = System.getenv("BEARER_TOKEN");
-    Stream<StreamElement> stream = api.search(bearerToken, rules, filteredStreamQuery);
+    BearerToken bearerToken = new BearerToken();
+    bearerToken.setBearerToken("replace-me");
+    Stream<StreamElement> stream = api.search(filteredStreamQuery, rules, bearerToken);
 
     stream.limit(5).forEach(System.out::println);
     System.out.println("dne");
