@@ -1,5 +1,6 @@
 package dev.twitter.api.v2.parser.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -21,6 +22,18 @@ public class JacksonParser implements Parser {
   public <T> T jsonToObject(String json, Class<T> clazz) {
     try {
       return mapper.readValue(json, clazz);
+    }
+    catch (RuntimeException e) {
+      throw e;
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public <T> T jsonToObject(String json, TypeReference<T> tr) {
+    try {
+      return mapper.readValue(json, tr);
     }
     catch (RuntimeException e) {
       throw e;

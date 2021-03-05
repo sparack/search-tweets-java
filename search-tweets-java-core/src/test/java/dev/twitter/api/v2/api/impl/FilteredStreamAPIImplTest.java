@@ -25,7 +25,8 @@ public class FilteredStreamAPIImplTest {
     add.setValue("cat has:media");
     rules.setAdd(Collections.singletonList(add));
 
-    api.search(rules, null, t -> System.out.println(t));
+    String bearerToken = System.getenv("BEARER_TOKEN");
+    api.search(bearerToken, rules, null, t -> System.out.println(t));
     System.out.println("dne");
     latch.await();
   }
