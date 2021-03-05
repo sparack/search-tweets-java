@@ -1,4 +1,4 @@
-package dev.twitter.api.v2.parser.impl;
+package dev.twitter.api.v2.api.impl;
 
 import static org.junit.Assert.*;
 
@@ -13,9 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import dev.twitter.api.v2.SearchAPI;
+import dev.twitter.api.v2.api.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;
-import dev.twitter.api.v2.impl.SearchImpl;
+import dev.twitter.api.v2.api.impl.SearchImpl;
 import dev.twitter.api.v2.model.ConsumerKey;
 import dev.twitter.api.v2.model.Expansion;
 import dev.twitter.api.v2.model.MediaField;
