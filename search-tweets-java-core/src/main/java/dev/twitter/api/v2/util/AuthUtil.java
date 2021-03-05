@@ -23,7 +23,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import dev.twitter.api.v2.exceptions.TwitterException;
-import dev.twitter.api.v2.model.ConsumerKey;
+import dev.twitter.api.v2.model.token.ConsumerKey;
 import dev.twitter.api.v2.model.TwitterError;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
 

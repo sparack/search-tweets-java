@@ -9,7 +9,8 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import dev.twitter.api.v2.api.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;
 import dev.twitter.api.v2.httpclient.HttpClient;
-import dev.twitter.api.v2.model.ConsumerKey;
+import dev.twitter.api.v2.model.token.BearerToken;
+import dev.twitter.api.v2.model.token.ConsumerKey;
 import dev.twitter.api.v2.model.SearchQuery;
 import dev.twitter.api.v2.model.SearchResponse;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
@@ -20,11 +21,11 @@ public class SearchImpl implements SearchAPI {
   JacksonParser parser = new JacksonParser();
 
   @Override
-  public SearchResponse search(SearchQuery searchQuery) throws TwitterException {
+  public SearchResponse search(SearchQuery searchQuery, BearerToken bearerToken) throws TwitterException {
     ArrayList<NameValuePair> queryParameters = convertSearchQueryToParams(searchQuery);
 
     String searchResponse =
-        HttpClient.executeGet(queryParameters, "hard-coded bearer token");
+        HttpClient.executeGet(queryParameters, bearerToken.getBearerToken());
     return parser.jsonToObject(searchResponse, SearchResponse.class);
   }
 

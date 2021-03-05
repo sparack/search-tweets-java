@@ -15,8 +15,8 @@ import org.junit.runners.JUnit4;
 
 import dev.twitter.api.v2.api.SearchAPI;
 import dev.twitter.api.v2.exceptions.TwitterException;
-import dev.twitter.api.v2.api.impl.SearchImpl;
-import dev.twitter.api.v2.model.ConsumerKey;
+import dev.twitter.api.v2.model.token.BearerToken;
+import dev.twitter.api.v2.model.token.ConsumerKey;
 import dev.twitter.api.v2.model.Expansion;
 import dev.twitter.api.v2.model.MediaField;
 import dev.twitter.api.v2.model.PlaceField;
@@ -31,6 +31,9 @@ public class SearchAPIIntegrationTest {
 
   @Test
   public void testBasicSearch() throws TwitterException {
+    BearerToken bearerToken = new BearerToken();
+    bearerToken.setBearerToken("replace-me");
+
     SearchQuery searchQuery = new SearchQuery();
     searchQuery.setEndTime(ZonedDateTime.ofInstant(Instant.ofEpochMilli(1614586225000L), ZoneId.systemDefault()));
     searchQuery.setExpansions(
@@ -47,7 +50,7 @@ public class SearchAPIIntegrationTest {
         new ArrayList<>(Arrays.asList(TweetField.author_id, TweetField.created_at, TweetField.attachments)));
 
     SearchAPI searchAPI = new SearchImpl();
-    SearchResponse response = searchAPI.search(searchQuery);
+    SearchResponse response = searchAPI.search(searchQuery, bearerToken);
     assertEquals(12, response.getData().size());
     assertFalse(StringUtils.isEmpty(response.getData().get(0).getAuthorId()));
     assertNotNull(response.getMeta());
@@ -78,38 +81,47 @@ public class SearchAPIIntegrationTest {
 
   @Test(expected = TwitterException.class)
   public void testFailedRequest() throws TwitterException {
+    BearerToken bearerToken = new BearerToken();
+    bearerToken.setBearerToken("replace-me");
+
     SearchQuery searchQuery = new SearchQuery();
     searchQuery.setQuery("biden");
 
     //maxResults not b/w 10 and 100 should throw exception
     searchQuery.setMaxResults(4);
     SearchAPI searchAPI = new SearchImpl();
-    searchAPI.search(searchQuery);
+    searchAPI.search(searchQuery, bearerToken);
   }
 
   @Test
   public void testNextToken() throws TwitterException {
+    BearerToken bearerToken = new BearerToken();
+    bearerToken.setBearerToken("replace-me");
+
     SearchQuery searchQuery = new SearchQuery();
     searchQuery.setQuery("climate");
     searchQuery.setMaxResults(11);
 
     SearchAPI searchAPI = new SearchImpl();
-    SearchResponse firstResponse = searchAPI.search(searchQuery);
+    SearchResponse firstResponse = searchAPI.search(searchQuery, bearerToken);
 
     searchQuery.setNextToken(firstResponse.getMeta().getNextToken());
-    SearchResponse secondResponse = searchAPI.search(searchQuery);
+    SearchResponse secondResponse = searchAPI.search(searchQuery, bearerToken);
     assertEquals(11, secondResponse.getData().size());
   }
 
   @Test
   public void testNoTweets() throws TwitterException {
+    BearerToken bearerToken = new BearerToken();
+    bearerToken.setBearerToken("replace-me");
+
     SearchQuery searchQuery = new SearchQuery();
     searchQuery.setQuery("climate");
     searchQuery.setMaxResults(11);
     searchQuery.setUntilId("1");
 
     SearchAPI searchAPI = new SearchImpl();
-    SearchResponse response = searchAPI.search(searchQuery);
+    SearchResponse response = searchAPI.search(searchQuery, bearerToken);
     assertNotNull(response.getMeta());
     assertNull(response.getData());
 
