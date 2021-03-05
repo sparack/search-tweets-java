@@ -1,4 +1,4 @@
-package dev.twitter.api.v2.parser.impl;
+package dev.twitter.api.v2.api.impl;
 
 import static org.junit.Assert.*;
 

@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class Rules {
   private List<Add> add;
-  private List<String> delete;
+  private Delete delete;
 }

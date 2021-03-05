@@ -3,6 +3,7 @@ package dev.twitter.api.v2.api.impl;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +30,7 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 
 import dev.twitter.api.v2.api.FilteredStreamAPI;
-import dev.twitter.api.v2.model.SearchQuery;
+import dev.twitter.api.v2.model.FilteredStreamQuery;
 import dev.twitter.api.v2.model.rule.Delete;
 import dev.twitter.api.v2.model.rule.Rule;
 import dev.twitter.api.v2.model.rule.RuleResponse;
@@ -37,7 +38,6 @@ import dev.twitter.api.v2.model.rule.Rules;
 import dev.twitter.api.v2.model.stream.StreamElement;
 import dev.twitter.api.v2.parser.Parser;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
-import dev.twitter.api.v2.util.DateTimeUtil;
 
 public class FilteredStreamAPIImpl implements FilteredStreamAPI {
 
@@ -48,7 +48,7 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
   private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
   @Override
-  public Stream<StreamElement> search(String bearerToken, Rules rules, SearchQuery query) throws Exception {
+  public Stream<StreamElement> search(String bearerToken, Rules rules, FilteredStreamQuery query) throws Exception {
 
     setupRules(bearerToken, rules);
 
@@ -107,7 +107,7 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
   @Override
   public void setupRules(String bearerToken, Rules rules) throws Exception {
     List<Rule> existingRules = getRules(bearerToken);
-    if (!existingRules.isEmpty()) {
+    if (existingRules != null && !existingRules.isEmpty()) {
       deleteRules(bearerToken, existingRules);
     }
     createRules(bearerToken, rules);
@@ -124,8 +124,12 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
     HttpEntity entity = response.getEntity();
     String json = EntityUtils.toString(entity, "UTF-8");
 
+    List<Rule> existingRules = null;
     RuleResponse ruleResponse = parser.jsonToObject(json, RuleResponse.class);
-    return ruleResponse.getData();
+    if(ruleResponse.getData()!= null && !ruleResponse.getData().isEmpty()) {
+      existingRules = ruleResponse.getData();
+    }
+    return existingRules;
   }
 
   @Override
@@ -137,7 +141,9 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
     httpPost.setHeader("content-type", "application/json");
     Delete d = new Delete();
     d.setIds(existingRules.stream().map(Rule::getId).collect(Collectors.toList()));
-    StringEntity body = new StringEntity(parser.objectToJson(d));
+    Rules rules = new Rules();
+    rules.setDelete(d);
+    StringEntity body = new StringEntity(parser.objectToJson(rules));
     httpPost.setEntity(body);
     CloseableHttpResponse response = httpClient.execute(httpPost);
     HttpEntity entity = response.getEntity();
@@ -146,8 +152,9 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
     }
   }
 
-  private ArrayList<NameValuePair> convertSearchQueryToParams(SearchQuery query) {
+  private ArrayList<NameValuePair> convertSearchQueryToParams(FilteredStreamQuery query) {
     ArrayList<NameValuePair> params = new ArrayList<>();
+    if(query == null) return params;
 
     if(query.getExpansions() != null && !query.getExpansions().isEmpty())
       params.add(new BasicNameValuePair("expansions", StringUtils.join(query.getExpansions(), ',')));

@@ -12,6 +12,7 @@ import org.junit.runners.JUnit4;
 
 import dev.twitter.api.v2.api.FilteredStreamAPI;
 import dev.twitter.api.v2.model.Expansion;
+import dev.twitter.api.v2.model.FilteredStreamQuery;
 import dev.twitter.api.v2.model.MediaField;
 import dev.twitter.api.v2.model.PlaceField;
 import dev.twitter.api.v2.model.PollField;
@@ -36,20 +37,18 @@ public class FilteredStreamAPIImplTest {
     add.setValue("cat has:media");
     rules.setAdd(Collections.singletonList(add));
 
-    SearchQuery searchQuery = new SearchQuery();
-    searchQuery.setExpansions(
-        new ArrayList(Arrays.asList(Expansion.AttachmentsPollIds.getParamValue(),
-            Expansion.AuthorId.getParamValue(),
-            Expansion.ReferencedTweetsId.getParamValue())));
-    searchQuery.setMediaFields(new ArrayList<>(Arrays.asList(MediaField.duration_ms, MediaField.media_key)));
-    searchQuery.setPlaceFields(new ArrayList<>(Arrays.asList(PlaceField.country_code)));
-    searchQuery.setPollFields(new ArrayList<>(Arrays.asList(PollField.id)));
-    searchQuery.setUserFields(new ArrayList<>(Arrays.asList(UserField.id)));
-    searchQuery.setTweetFields(
-        new ArrayList<>(Arrays.asList(TweetField.author_id, TweetField.created_at, TweetField.attachments)));
+    FilteredStreamQuery filteredStreamQuery = new FilteredStreamQuery();
+    filteredStreamQuery.setExpansions(new ArrayList(Arrays.asList(Expansion.AuthorId.getParamValue())));
+    filteredStreamQuery.setMediaFields(new ArrayList<>(Arrays.asList(FilteredStreamQuery.MediaField.media_key)));
+    filteredStreamQuery.setPlaceFields(new ArrayList<>(Arrays.asList(PlaceField.country_code)));
+    filteredStreamQuery.setPollFields(new ArrayList<>(Arrays.asList(PollField.id)));
+    filteredStreamQuery.setUserFields(new ArrayList<>(Arrays.asList(UserField.id)));
+    filteredStreamQuery.setTweetFields(new ArrayList<>(Arrays.asList(
+        FilteredStreamQuery.TweetField.author_id,
+        FilteredStreamQuery.TweetField.created_at)));
 
     String bearerToken = System.getenv("BEARER_TOKEN");
-    Stream<StreamElement> stream = api.search(bearerToken, rules, null);
+    Stream<StreamElement> stream = api.search(bearerToken, rules, filteredStreamQuery);
 
     stream.limit(5).forEach(System.out::println);
     System.out.println("dne");
