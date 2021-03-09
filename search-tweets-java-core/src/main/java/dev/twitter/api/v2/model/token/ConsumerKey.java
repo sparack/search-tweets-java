@@ -1,4 +1,4 @@
-package dev.twitter.api.v2.model;
+package dev.twitter.api.v2.model.token;
 
 import lombok.Data;
 

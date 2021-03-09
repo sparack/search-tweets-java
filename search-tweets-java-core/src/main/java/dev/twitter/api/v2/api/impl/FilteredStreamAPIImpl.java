@@ -36,6 +36,7 @@ import dev.twitter.api.v2.model.rule.Rule;
 import dev.twitter.api.v2.model.rule.RuleResponse;
 import dev.twitter.api.v2.model.rule.Rules;
 import dev.twitter.api.v2.model.stream.StreamElement;
+import dev.twitter.api.v2.model.token.BearerToken;
 import dev.twitter.api.v2.parser.Parser;
 import dev.twitter.api.v2.parser.impl.JacksonParser;
 
@@ -48,15 +49,15 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
   private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
   @Override
-  public Stream<StreamElement> search(String bearerToken, Rules rules, FilteredStreamQuery query) throws Exception {
+  public Stream<StreamElement> search(FilteredStreamQuery query, Rules rules, BearerToken bearerToken) throws Exception {
 
-    setupRules(bearerToken, rules);
+    setupRules(rules, bearerToken);
 
     ObjectMapper mapper = ((JacksonParser) parser).getMapper();
     URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream");
     uriBuilder.addParameters(convertSearchQueryToParams(query));
     HttpGet httpGet = new HttpGet(uriBuilder.build());
-    httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
+    httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken.getBearerToken()));
 
     BlockingQueue<StreamElement> queue = new LinkedBlockingQueue<>(50);
     executorService.submit(() -> {
@@ -86,13 +87,13 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
   }
 
   @Override
-  public void createRules(String bearerToken, Rules rules) throws Exception {
+  public void createRules(Rules rules, BearerToken bearerToken) throws Exception {
     HttpPost httpPost = new HttpPost("https://api.twitter.com/2/tweets/search/stream/rules");
     httpPost.setEntity(new StringEntity(
         parser.objectToJson(rules),
         ContentType.APPLICATION_JSON
     ));
-    String headerVal = MessageFormat.format("Bearer {0}", bearerToken);
+    String headerVal = MessageFormat.format("Bearer {0}", bearerToken.getBearerToken());
     httpPost.setHeader("Authorization", headerVal);
 
     try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
@@ -105,20 +106,20 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
   }
 
   @Override
-  public void setupRules(String bearerToken, Rules rules) throws Exception {
+  public void setupRules(Rules rules, BearerToken bearerToken) throws Exception {
     List<Rule> existingRules = getRules(bearerToken);
     if (existingRules != null && !existingRules.isEmpty()) {
-      deleteRules(bearerToken, existingRules);
+      deleteRules(existingRules, bearerToken);
     }
-    createRules(bearerToken, rules);
+    createRules(rules, bearerToken);
   }
 
   @Override
-  public List<Rule> getRules(String bearerToken) throws Exception {
+  public List<Rule> getRules(BearerToken bearerToken) throws Exception {
     URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream/rules");
 
     HttpGet httpGet = new HttpGet(uriBuilder.build());
-    httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
+    httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken.getBearerToken()));
     httpGet.setHeader("content-type", "application/json");
     CloseableHttpResponse response = httpClient.execute(httpGet);
     HttpEntity entity = response.getEntity();
@@ -133,11 +134,11 @@ public class FilteredStreamAPIImpl implements FilteredStreamAPI {
   }
 
   @Override
-  public void deleteRules(String bearerToken, List<Rule> existingRules) throws Exception {
+  public void deleteRules(List<Rule> existingRules, BearerToken bearerToken) throws Exception {
     URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream/rules");
 
     HttpPost httpPost = new HttpPost(uriBuilder.build());
-    httpPost.setHeader("Authorization", String.format("Bearer %s", bearerToken));
+    httpPost.setHeader("Authorization", String.format("Bearer %s", bearerToken.getBearerToken()));
     httpPost.setHeader("content-type", "application/json");
     Delete d = new Delete();
     d.setIds(existingRules.stream().map(Rule::getId).collect(Collectors.toList()));
